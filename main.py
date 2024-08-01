@@ -1,100 +1,79 @@
 from random import randint
 import argparse
 import os
-
 def tries():
-    TRIES = 0
-
+    attempts = 0
     parser = argparse.ArgumentParser(description="Gra: Zgadnij losową liczbę")
-
-    parser.add_argument('--max-tries', type=int, default=5, help=('maksymalna cyfra to 5'))
-    parser.add_argument('--max', type=int, default=100, help=('maksymalny zakres wynosi 100'))
-    parser.add_argument('--min', type=int, default=0, help=('minimalny zakres wynosi 1'))
-
+    parser.add_argument('--max-attempts', type=int, default=5, help=('- Maksymalna cyfra to 5'))
+    parser.add_argument('--max_number', type=int, default=100, help=('- Zakres górny wynosi 100'))
+    parser.add_argument('--min_number', type=int, default=0, help=('- Zakres dolny zakres wynosi 1'))
     args = parser.parse_args()
-    MAX_TRIES: int = args.max_tries
-    MAX: int = args.max
-    MIN: int = args.min
-
+    max_attempts: int = args.max_attempts
+    min_number: int = args.min_number
+    max_number: int = args.max_number
     args = parser.parse_args()
 
+    return attempts,max_attempts,args,max_number,min_number
+def limit_numbers(max_number,min_number):
+    attempts,max_attempts,args,max_number,min_number = tries()
+    max_number = 100
+    min_number = 0
+if __name__ == '__limit_numbers__':
+    limit_numbers()
+def win(win_game, clear_screen = False) -> str:
+    def clear_screen():
+        clear = os.system('cls')
 
-    return TRIES,MAX_TRIES,MAX,MIN,parser
-
-
-def win() -> str:
-    clear = lambda: os.system('cls')
-
-    WIN_ASK: str = input("Czy chcesz zagrać jeszcze raz? y/n ")
-    if WIN_ASK == "y":
-        clear()
+    win_game: str = input("Czy chcesz zagrać jeszcze raz? y/n ")
+    if win_game == "y":
+        # clear_screen()
         print("-" * 20)
         print("Zaczynasz od nowa")
         print("-" * 20)
-        game()
-
-    if WIN_ASK == "n":
+        main()
+    if win_game == "n":
         print("\n")
         print("-" * 20)
         print("Koniec Gry")
         print("-" * 20)
-
-
-    return WIN_ASK
-
-def game():
-
-    TRIES, MAX_TRIES,parser,MAX,MIN = tries()
-    DIGIT: int = randint(1,100)
-    # print(DIGIT)
+    return win_game
+def main():
+    attempts,max_attempts,args,max_number,min_number = tries()
+    number_drawn: int = randint(1,100)
     print("-" * 20)
     print("GRA: Znajdz wylosowaną liczbę")
     print("-" * 20)
-    print(f"- Pozostało {MAX_TRIES} prób")
-    print("-" * 20)
-    ASK: int = input("Podaj liczbę która została wylosowana: ")
-
     while True:
 
-        MAX_TRIES -= 1
-        print(f"\n - Pozostało {MAX_TRIES} prób \n")
-
-
         try:
-
-            if int(ASK) > DIGIT:
+            guess_number: int = input("Podaj liczbę która została wylosowana: ")
+            print(f"\n - Pozostało {max_attempts} prób \n")
+            if int(guess_number) > number_drawn:
                 print(" - Podana liczba jest większa niż wylosowana! \n")
-                ASK: int = input("Podaj liczbę która została wylosowana: ")
-
-            if int(ASK) < DIGIT:
-                # if int(ASK) < MIN:
-                #     print("!"*20)
-                #     print("Zakres wynosi 1-100!")
-                #     print("!"*20)
-
+            if int(guess_number) < number_drawn:
                 print(" - Podana liczba jest mniejsza niż wylosowana! \n")
-                ASK: int = input("Podaj liczbę która została wylosowana: ")
-
-            TRIES += 1
-
-
-            if DIGIT == int(ASK):
-                print(f"Brawo! To ta liczba!\n")
-                print("-"*20, f"\n - Wylosowana liczba to: {DIGIT} | Liczba prób: {TRIES}")
-
-                return win()
-
-            if MAX_TRIES <= 1:
-                print("-" *20, '\n')
-                print(f"Wykorzystano Wszystkie próby \n")
-                print(f"Liczba która była wylosowana to: {DIGIT}")
-                print('\n', "-" *20,'\n')
-
-                return win()
-        except:
+            attempts += 1
+            if int(guess_number) > max_number:
+                print(" - Zakres górny wynosi 100! \n")
+            if int(guess_number) < min_number:
+                print(" - Zakres dolny wynosi 1! \n")
+        except ValueError as e:
                 print(" - Podano złą wartość*")
                 print(" - Wymaganą wartością jest liczba*")
-                return win()
+                print(f"{e}")
+                return win(win_game="")
+        finally:
+            max_attempts -= 1
+        if number_drawn == int(guess_number):
+            print(f"Brawo! To ta liczba!\n")
+            print("-"*20, f"\n - Wylosowana liczba to: {number_drawn} | Liczba prób: {attempts}")
+            return win(win_game="")
+        if max_attempts < 0:
+            print("-" *20, '\n')
+            print(f"Wykorzystano Wszystkie próby \n")
+            print(f"Liczba która była wylosowana to: {number_drawn}")
+            print('\n', "-" *20,'\n')
+            return win(win_game="")
 
-
-game()
+if __name__ == '__main__':
+    main()
